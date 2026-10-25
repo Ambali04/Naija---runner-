@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Naija Runner 3D</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07110d;color:white;font-family:Arial,sans-serif;overflow:hidden;touch-action:pan-y}
+#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:linear-gradient(#80d8f5 0%,#e5f6d4 40%,#427b37 41%,#174b28 100%)}
+#sun{position:absolute;top:7%;right:12%;width:60px;height:60px;border-radius:50%;background:#ffe88b;box-shadow:0 0 40px #fff5a8}
+.city{position:absolute;bottom:59%;height:22%;width:100%;display:flex;align-items:end;justify-content:space-around}
+.building{width:12%;background:#d88b58;border:2px solid #754e3d;height:70%;box-shadow:inset 0 0 0 4px #ffffff22}
+.building:nth-child(2n){height:95%;background:#d9b26c}.building:nth-child(3n){height:55%;background:#9a9a85}
+.building:after{content:"";display:block;height:100%;background:repeating-linear-gradient(90deg,transparent 0 10px,#f9e8a4 11px 16px),repeating-linear-gradient(0deg,transparent 0 14px,#f9e8a4 15px 20px)}
+#market{position:absolute;top:35%;width:100%;text-align:center;color:#fff;background:#b32e19;font-weight:bold;padding:5px;letter-spacing:2px}
+#road{position:absolute;left:12%;width:76%;top:40%;height:75%;background:linear-gradient(90deg,#303638,#62686a 50%,#303638);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%)}
+#road:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 50px,#fff 52px 62px,transparent 64px 100px);animation:road 0.65s linear infinite;opacity:.9}
+@keyframes road{to{background-position:0 112px}}
+#edgeL,#edgeR{position:absolute;top:42%;height:65%;width:7%;background:repeating-linear-gradient(0deg,#e5d4a0 0 16px,#cf3528 16px 32px);transform:perspective(100px) rotateX(10deg)}
+#edgeL{left:9%}#edgeR{right:9%}
+.palm{position:absolute;top:34%;font-size:clamp(26px,7vw,55px);filter:drop-shadow(2px 4px 2px #173d18)}
+.p1{left:1%}.p2{right:2%;top:38%}.p3{left:4%;top:48%}.p4{right:4%;top:51%}
+#hud{position:absolute;z-index:10;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;font-weight:bold;text-shadow:1px 2px 3px black}
+.pill{background:#07110ddc;padding:9px 12px;border:1px solid #b5d28b;border-radius:12px}
+#runner{position:absolute;z-index:5;bottom:14%;left:50%;width:60px;height:110px;transform:translateX(-50%);transition:left .15s;filter:drop-shadow(0 8px 4px #1119)}
+.head{position:absolute;top:0;left:19px;width:23px;height:25px;background:#713d20;border-radius:50%;border:3px solid #2c211a}
+.body{position:absolute;top:25px;left:13px;width:35px;height:42px;background:#14864d;border:3px solid #f2c94c;border-radius:10px 10px 5px 5px}
+.arm{position:absolute;top:30px;width:12px;height:36px;background:#713d20;border-radius:10px;transform-origin:top;animation:arms .25s infinite alternate}
+.arm.a{left:6px}.arm.b{right:5px;animation-delay:.12s}
+.leg{position:absolute;top:62px;width:14px;height:40px;background:#222b35;border-radius:7px;transform-origin:top;animation:legs .25s infinite alternate}
+.leg.a{left:17px}.leg.b{right:15px;animation-delay:.12s}
+@keyframes arms{to{transform:rotate(30deg)}}@keyframes legs{to{transform:rotate(-35deg)}}
+#runner.jump{animation:jump .55s ease-out}
+@keyframes jump{50%{bottom:34%}}
+.obstacle{position:absolute;z-index:4;top:40%;font-size:clamp(28px,8vw,52px);transition:none;filter:drop-shadow(0 5px 2px #1118)}
+#message{position:absolute;z-index:20;inset:0;background:#06100cdb;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.panel{max-width:340px;background:#13291d;border:2px solid #edc84c;border-radius:22px;padding:25px;box-shadow:0 0 35px #0008}
+h1{margin:0 0 10px;color:#ffd34e;font-size:36px}button{border:0;border-radius:12px;padding:14px 22px;background:#f4c542;color:#1b2419;font-weight:bold;font-size:17px;margin:6px}
+#hint{font-size:13px;line-height:1.5;color:#d7e7d5}
+#jumpBtn{position:absolute;z-index:12;bottom:20px;right:18px;border:2px solid white;background:#d99a1c;color:#171717}
+</style>
+</head>
+<body>
+<div id="game">
+<div id="sun"></div>
+<div class="city"><div class="building"></div><div class="building"></div><div class="building"></div><div class="building"></div><div class="building"></div><div class="building"></div></div>
+<div id="market">LAGOS • OJA • NA YOUR WAY!</div>
+<div id="road"></div><div id="edgeL"></div><div id="edgeR"></div>
+<div class="palm p1">🌴</div><div class="palm p2">🌴</div><div class="palm p3">🌴</div><div class="palm p4">🌴</div>
+<div id="hud"><div class="pill">🏃 Naija Runner</div><div class="pill">⭐ <span id="score">0</span></div><div class="pill">🪙 <span id="coins">0</span></div></div>
+<div id="runner"><div class="head"></div><div class="body"></div><div class="arm a"></div><div class="arm b"></div><div class="leg a"></div><div class="leg b"></div></div>
+<button id="jumpBtn" onclick="jump()">JUMP ⬆</button>
+<div id="message"><div class="panel"><h1>NAIJA RUNNER</h1><p>Run the streets of Nigeria!</p><p>🚕 🛺 🏍️ 🚌</p><p id="hint">Swipe left/right to change lanes.<br>Swipe up or tap JUMP to jump over obstacles.<br>Collect coins and dodge traffic!</p><button onclick="startGame()">START RUN</button></div></div>
+</div>
+<script>
+const runner=document.getElementById('runner'),msg=document.getElementById('message');
+let lane=1,score=0,coins=0,running=false,objects=[],spawnTimer,gameLoop,lastSpawn=0,lastTime=0,speed=4;
+const lanes=[29,50,71],traffic=['🚌','🛺','🏍️','🚕','🚧','🕳️','🚲'];
+function setLane(){runner.style.left=lanes[lane]+'%'}
+function startGame(){objects.forEach(o=>o.el.remove());objects=[];lane=1;score=0;coins=0;speed=4;running=true;msg.style.display='none';setLane();lastTime=performance.now();lastSpawn=lastTime;requestAnimationFrame(tick)}
+function jump(){if(!running)return;runner.classList.remove('jump');void runner.offsetWidth;runner.classList.add('jump');setTimeout(()=>runner.classList.remove('jump'),550)}
+function spawn(){let el=document.createElement('div');el.className='obstacle';let isCoin=Math.random()<.34;el.textContent=isCoin?'🪙':traffic[Math.floor(Math.random()*traffic.length)];let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.coin=isCoin?'1':'0';el.style.left=lanes[l]+'%';el.style.top='38%';document.getElementById('game').appendChild(el);objects.push({el,y:38,lane:l,coin:isCoin,done:false})}
+function tick(t){if(!running)return;let dt=Math.min(2,(t-lastTime)/16.7);lastTime=t;score+=Math.round(dt);speed=Math.min(8,4+score/500);document.getElementById('score').textContent=score;document.getElementById('coins').textContent=coins;
+if(t-lastSpawn>Math.max(520,1100-score)){spawn();lastSpawn=t}
+objects=objects.filter(o=>{o.y+=speed*dt*.10;o.el.style.top=o.y+'%';let hit=o.lane===lane&&o.y>75&&o.y<89;if(hit&&!o.done){o.done=true;if(o.coin){coins++;o.el.remove();return false}else{running=false;msg.style.display='flex';msg.querySelector('h1').textContent='GAME OVER';msg.querySelector('p').textContent='Score: '+score+' • Coins: '+coins;msg.querySelector('button').textContent='RUN AGAIN';return false}}
+if(o.y>105){o.el.remove();return false}return true});if(running)requestAnimationFrame(tick)}
+let sx=0,sy=0;document.getElementById('game').addEventListener('touchstart',e=>{sx=e.changedTouches[0].clientX;sy=e.changedTouches[0].clientY},{passive:true});document.getElementById('game').addEventListener('touchend',e=>{if(!running)return;let dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>30&&Math.abs(dx)>Math.abs(dy)){lane=Math.max(0,Math.min(2,lane+(dx>0?1:-1)));setLane()}else if(dy<-25)jump()},{passive:true});
+document.addEventListener('keydown',e=>{if(!running)return;if(e.key==='ArrowLeft')lane=Math.max(0,lane-1);if(e.key==='ArrowRight')lane=Math.min(2,lane+1);if(e.key==='ArrowUp'||e.key===' ')jump();setLane()});
+</script>
+</body>
+</html>
